@@ -1,0 +1,39 @@
+package network;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+
+
+public class Cient {
+	
+	
+	    public static void main(String[] args) {
+	        try {
+	            //create client socket and connect to server
+	            Socket clientSocket = new Socket("localhost", 12345);
+	            System.out.println("Connected to the server");
+  
+	            
+	            InputStream input = clientSocket.getInputStream();
+	            OutputStream output = clientSocket.getOutputStream();
+
+	            
+	            String message = "Hello from the client!";
+	            output.write(message.getBytes());
+
+	            //receive response
+	            byte[] buffer = new byte[1024];
+	            int bytesRead = input.read(buffer);
+	            String response = new String(buffer, 0, bytesRead);
+	            System.out.println("Received response: " + response);
+
+	            // Close
+	            clientSocket.close();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+
+

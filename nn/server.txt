@@ -1,0 +1,44 @@
+package network;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+	
+
+	public class Server {
+	    public static void main(String[] args) {
+	        try {
+	            //create ss
+	            ServerSocket serverSocket = new ServerSocket(12345);
+	            System.out.println("Server is listening on port 12345");
+
+	            //accept client conc
+	            Socket clientSocket = serverSocket.accept();
+	            System.out.println("Accepted connection from " + clientSocket.getInetAddress());
+
+	           //get io strm
+	            InputStream input = clientSocket.getInputStream();
+	            OutputStream output = clientSocket.getOutputStream();
+
+	            //sending data
+	            byte[] buffer = new byte[1024];
+	            int bytesRead = input.read(buffer);
+	            String data = new String(buffer, 0, bytesRead);
+	            System.out.println("Received data: " + data);
+
+	           
+	            String response = "Hello from the server!";
+	            output.write(response.getBytes());
+
+	            //close
+	            clientSocket.close();
+	            serverSocket.close();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+
+

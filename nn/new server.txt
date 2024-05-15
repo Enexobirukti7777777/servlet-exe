@@ -1,0 +1,70 @@
+package network;
+
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class ServerClass {
+
+    public static void main(String[] args) {
+        try (// Create server socket
+		ServerSocket serverSocket = new ServerSocket(12345)) {
+            System.out.println("Server is listening on port 12345");
+
+            while (true) {
+                // Accept client connection
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Accepted connection from " + clientSocket.getInetAddress());
+
+                // Start a new thread to handle the client communication
+                Thread clientThread = new Thread(() -> handleClient(clientSocket));
+                clientThread.start();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void handleClient(Socket clientSocket) {
+        try {
+            // Get input and output streams
+            BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()), true);
+
+            while (true) {
+                // Receive data from client
+                String data = reader.readLine();
+                System.out.println("Received data from " + clientSocket.getInetAddress() + ": " + data);
+
+                // Check if the client wants to exit
+                if (data.equalsIgnoreCase("exit")) {
+                    break;
+                }
+
+                // Additional processing logic
+                String processedData = processData(data);
+
+                // Send response to client
+                writer.println("Hello from the server!");
+                writer.println("Processed data: " + processedData);
+            }
+
+            // Close connections
+            writer.close();
+            reader.close();
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String processData(String data) {
+        // Add your custom logic to process the received data here
+        return data.toUpperCase();
+    }
+}

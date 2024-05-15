@@ -1,0 +1,51 @@
+package network;
+
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+public class ClientClass {
+
+    public static void main(String[] args) {
+        try {
+            // Connect to the server
+            Socket socket = new Socket("localhost", 12345);
+            System.out.println("Connected to the server");
+
+            // Get input and output streams
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+
+            // Prompt the user for input
+            BufferedReader userInputReader = new BufferedReader(new InputStreamReader(System.in));
+            while (true) {
+                System.out.print("Enter a message (or 'exit' to quit): ");
+                String input = userInputReader.readLine();
+
+                // Send data to the server
+                writer.println(input);
+
+                // Check if the user wants to exit
+                if (input.equalsIgnoreCase("exit")) {
+                    break;
+                }
+
+                // Receive response from the server
+                String response = reader.readLine();
+                System.out.println("Received response: " + response);
+            }
+
+            // Close connections
+            writer.close();
+            reader.close();
+            userInputReader.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
